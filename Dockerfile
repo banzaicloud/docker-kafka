@@ -1,7 +1,7 @@
 FROM alpine:latest AS kafka_dist
 
 ARG scala_version=2.13
-ARG kafka_version=2.4.0
+ARG kafka_version=2.4.1
 ARG kafka_distro_base_url=https://www-us.apache.org/dist/kafka
 
 ENV kafka_distro=kafka_$scala_version-$kafka_version.tgz
@@ -25,7 +25,7 @@ RUN rm -r kafka_$scala_version-$kafka_version/bin/windows
 FROM openjdk:11-jre-slim
 
 ARG scala_version=2.13
-ARG kafka_version=2.4.0
+ARG kafka_version=2.4.1
 
 ENV KAFKA_VERSION=$kafka_version \
     SCALA_VERSION=$scala_version \
