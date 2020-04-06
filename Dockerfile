@@ -1,7 +1,7 @@
 FROM gradle:jdk11 AS kafka_build
 
 ARG kafka_repo_url=https://github.com/banzaicloud/kafka.git
-ARG kafka_repo_commit=aa61adcd557fe302e889c0a2566cc34228d4353a
+ARG kafka_repo_tag=2.4.1-bzc.1
 ARG kafka_base_dir=/var/tmp/kafka
 ARG kafka_release_dir=$kafka_base_dir/release
 
@@ -41,5 +41,7 @@ RUN mkdir ${KAFKA_HOME} && apt-get update && apt-get install curl -y && apt-get 
 COPY --from=kafka_build $kafka_release_dir ${KAFKA_HOME}
 
 RUN chmod a+x ${KAFKA_HOME}/bin/*.sh
+
+ADD VERSION .
 
 CMD ["kafka-server-start.sh"]
