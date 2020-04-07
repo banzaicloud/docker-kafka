@@ -1,12 +1,13 @@
 FROM gradle:jdk11 AS kafka_build
 
+ARG scala_version=2.13.1
 ARG kafka_repo_url=https://github.com/banzaicloud/kafka.git
 ARG kafka_repo_tag=2.4.1-bzc.1
 ARG kafka_base_dir=/var/tmp/kafka
 ARG kafka_release_dir=$kafka_base_dir/release
 
 ENV REPO_URL=$kafka_repo_url
-ENV REPO_COMMIT=$kafka_repo_commit
+ENV REPO_TAG=$kafka_repo_tag
 
 RUN mkdir -p $kafka_release_dir
 RUN mkdir -p $kafka_release_dir/libs
@@ -16,8 +17,8 @@ WORKDIR $kafka_base_dir
 RUN git clone $REPO_URL
 
 WORKDIR $kafka_base_dir/kafka
-RUN git checkout $REPO_COMMIT
-RUN ./gradlew clean jar
+RUN git checkout $REPO_TAG
+RUN ./gradlew -PscalaVersion=$scala_version clean jar
 RUN find . -name "*jar" -type f | grep -v "upgrade-system-tests" | grep -v "fork" | xargs -I{} cp -v {} $kafka_release_dir/libs
 RUN cp -r ./bin $kafka_release_dir
 RUN cp -r ./config $kafka_release_dir
@@ -25,7 +26,7 @@ RUN cp -r ./config $kafka_release_dir
 
 FROM openjdk:11-jre-slim
 
-ARG scala_version=2.12
+ARG scala_version=2.13.1
 ARG kafka_version=2.4.1
 ARG kafka_base_dir=/var/tmp/kafka
 ARG kafka_release_dir=$kafka_base_dir/release
