@@ -22,6 +22,8 @@ RUN ./gradlew -PscalaVersion=$scala_version clean jar
 RUN find . -name "*jar" -type f | grep -v "upgrade-system-tests" | grep -v "fork" | xargs -I{} cp -v {} $kafka_release_dir/libs
 RUN cp -r ./bin $kafka_release_dir
 RUN cp -r ./config $kafka_release_dir
+RUN cp NOTICE $kafka_release_dir
+RUN cp LICENSE $kafka_release_dir
 
 
 FROM openjdk:11-jre-slim
