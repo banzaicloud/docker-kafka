@@ -22,7 +22,8 @@ git merge
 
 name="banzaicloud"
 image="kafka"
-scala=$(awk '/scala_version=/' < ./Dockerfile | cut -c 19-)
+scalas=$(awk '/scala_version=/' < ./Dockerfile | cut -c 19-)
+scala=$(echo $scalas | awk '{split($0,a," "); print a[1]}')
 kafka=$(awk '/kafka_version=/' < ./Dockerfile | cut -c 19-)
 major=$(awk -F. '{print $1}' < ./VERSION)
 minor=$(awk -F. '{print $2}' < ./VERSION)
@@ -42,11 +43,11 @@ then
   git push origin "$branch"
 fi
 
-docker build -t $name/$image:$tag-latest .
-docker tag $name/$image:$tag-latest $name/$image:$tag.$build
+docker build -t "$name"/"$image":"$tag"-latest .
+docker tag "$name"/"$image":"$tag"-latest "$name"/"$image":"$tag"."$build"
 
 if [ $docker -gt 0 ]
 then
-  docker push $name/$image:$tag-latest
-  docker push $name/$image:$tag.$build
+  docker push "$name"/"$image":"$tag"-latest
+  docker push "$name"/"$image":"$tag"."$build"
 fi
