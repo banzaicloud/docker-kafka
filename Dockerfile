@@ -2,7 +2,7 @@ FROM gradle:jdk11 AS kafka_build
 
 ARG scala_version=2.13.2
 ARG kafka_repo_url=https://github.com/banzaicloud/kafka.git
-ARG kafka_repo_tag=2.6.0-bzc.1
+ARG kafka_repo_tag=2.6.1-bzc.1
 ARG kafka_base_dir=/var/tmp/kafka
 ARG kafka_release_dir=$kafka_base_dir/release
 
@@ -30,7 +30,7 @@ RUN cp LICENSE $kafka_release_dir
 FROM openjdk:11-jre-slim
 
 ARG scala_version=2.13.2
-ARG kafka_version=2.6.0
+ARG kafka_version=2.6.1
 ARG kafka_base_dir=/var/tmp/kafka
 ARG kafka_release_dir=$kafka_base_dir/release
 
