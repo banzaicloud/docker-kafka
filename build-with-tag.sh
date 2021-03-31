@@ -1,6 +1,8 @@
 #! /usr/bin/env sh
 git=0
 docker=0
+name="banzaicloud"
+image="kafka"
 
 while test $# -gt 0
 do
@@ -13,6 +15,16 @@ do
             echo "docker-push=enabled"
             docker=1
             ;;
+        --name)
+            name=$2
+            shift
+            echo "name=$name"
+            ;;
+        --image)
+            image=$2
+            shift
+            echo "image=$image"
+            ;;
     esac
     shift
 done
@@ -20,8 +32,6 @@ done
 git fetch --all
 git merge
 
-name="banzaicloud"
-image="kafka"
 scalas=$(awk '/scala_version=/' < ./Dockerfile | cut -c 19-)
 scala=$(echo $scalas | awk '{split($0,a," "); print a[1]}')
 kafka=$(awk '/kafka_version=/' < ./Dockerfile | cut -c 19-)
