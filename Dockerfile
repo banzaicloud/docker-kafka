@@ -1,38 +1,31 @@
-FROM gradle:jdk11 AS kafka_build
+FROM alpine:latest AS kafka_dist
 
 ARG scala_version=2.13
-ARG kafka_repo_url=https://github.com/banzaicloud/kafka.git
-ARG kafka_repo_tag=2.7.0-bzc.2
-ARG kafka_base_dir=/var/tmp/kafka
-ARG kafka_release_dir=$kafka_base_dir/release
+ARG kafka_version=2.8.0
+ARG kafka_distro_base_url=https://www-us.apache.org/dist/kafka
 
-ENV REPO_URL=$kafka_repo_url
-ENV REPO_TAG=$kafka_repo_tag
+ENV kafka_distro=kafka_$scala_version-$kafka_version.tgz
+ENV kafka_distro_asc=$kafka_distro.asc
 
-RUN mkdir -p $kafka_release_dir
-RUN mkdir -p $kafka_release_dir/libs
-RUN mkdir -p $kafka_release_dir/logs
+RUN apk add --no-cache gnupg
 
-WORKDIR $kafka_base_dir
-RUN git clone $REPO_URL
+WORKDIR /var/tmp
 
-WORKDIR $kafka_base_dir/kafka
-RUN git checkout $REPO_TAG
-RUN ./gradlew -PscalaVersion=$scala_version clean jar
-RUN find . -name "*jar" -type f | grep -v "upgrade-system-tests" | grep -v "fork" | xargs -I{} cp -v {} $kafka_release_dir/libs
-RUN cp -r ./bin $kafka_release_dir
-RUN rm -rf $kafka_release_dir/bin/windows
-RUN cp -r ./config $kafka_release_dir
-RUN cp NOTICE $kafka_release_dir
-RUN cp LICENSE $kafka_release_dir
+RUN wget -q $kafka_distro_base_url/$kafka_version/$kafka_distro
+RUN wget -q $kafka_distro_base_url/$kafka_version/$kafka_distro_asc
+RUN wget -q $kafka_distro_base_url/KEYS
+
+RUN gpg --import KEYS
+RUN gpg --verify $kafka_distro_asc $kafka_distro
+
+RUN tar -xzf $kafka_distro 
+RUN rm -r kafka_$scala_version-$kafka_version/bin/windows
 
 
 FROM openjdk:11-jre-slim
 
 ARG scala_version=2.13
-ARG kafka_version=2.7.0
-ARG kafka_base_dir=/var/tmp/kafka
-ARG kafka_release_dir=$kafka_base_dir/release
+ARG kafka_version=2.8.0
 
 ENV KAFKA_VERSION=$kafka_version \
     SCALA_VERSION=$scala_version \
@@ -42,7 +35,7 @@ ENV PATH=${PATH}:${KAFKA_HOME}/bin
 
 RUN mkdir ${KAFKA_HOME} && apt-get update && apt-get install curl -y && apt-get clean
 
-COPY --from=kafka_build $kafka_release_dir ${KAFKA_HOME}
+COPY --from=kafka_dist /var/tmp/kafka_$scala_version-$kafka_version ${KAFKA_HOME}
 
 RUN chmod a+x ${KAFKA_HOME}/bin/*.sh
 
