@@ -2,7 +2,7 @@ FROM gradle:jdk11 AS kafka_build
 
 ARG scala_version=2.13
 ARG kafka_repo_url=https://github.com/banzaicloud/kafka.git
-ARG kafka_repo_tag=2.7.0-bzc.2
+ARG kafka_repo_tag=2.7.1-bzc.1
 ARG kafka_base_dir=/var/tmp/kafka
 ARG kafka_release_dir=$kafka_base_dir/release
 
@@ -30,7 +30,7 @@ RUN cp LICENSE $kafka_release_dir
 FROM openjdk:11-jre-slim
 
 ARG scala_version=2.13
-ARG kafka_version=2.7.0
+ARG kafka_version=2.7.1
 ARG kafka_base_dir=/var/tmp/kafka
 ARG kafka_release_dir=$kafka_base_dir/release
 
@@ -40,11 +40,14 @@ ENV KAFKA_VERSION=$kafka_version \
 
 ENV PATH=${PATH}:${KAFKA_HOME}/bin
 
-RUN mkdir ${KAFKA_HOME} && apt-get update && apt-get install curl -y && apt-get clean
-
 COPY --from=kafka_build $kafka_release_dir ${KAFKA_HOME}
 
-RUN chmod a+x ${KAFKA_HOME}/bin/*.sh
+RUN \
+    set -xe; \
+    apt-get update \
+    && apt-get install curl -y \
+    && apt-get clean \
+    && chmod a+x ${KAFKA_HOME}/bin/*.sh
 
 ADD VERSION .
 
