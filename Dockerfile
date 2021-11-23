@@ -22,7 +22,7 @@ RUN tar -xzf $kafka_distro
 RUN rm -r kafka_$scala_version-$kafka_version/bin/windows
 
 
-FROM openjdk:11-jre-slim
+FROM eclipse-temurin:11-jre
 
 ARG scala_version=2.13
 ARG kafka_version=3.0.0
