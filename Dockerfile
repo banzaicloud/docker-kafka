@@ -27,7 +27,7 @@ RUN cp NOTICE $kafka_release_dir
 RUN cp LICENSE $kafka_release_dir
 
 
-FROM openjdk:11-jre-slim
+FROM eclipse-temurin:11-jre
 
 ARG scala_version=2.13
 ARG kafka_version=2.7.1
