@@ -2,10 +2,11 @@ name: Docker
 on:
   push:
     branches:
-      - master
+      - test-kafka-3.4
     tags:
       - "[0-9]+.[0-9]+-[0-9]+.[0-9]+.[0-9]+-bzc.?[0-9]+"
       - "[0-9]+.[0-9]+-[0-9]+.[0-9]+.[0-9]+"
+      - "[0-9]+.[0-9]+-[0-9]+.[0-9]+.[0-9]+-test.?[0-9]+"
 #  pull_request:
 env:
   PLATFORMS: linux/amd64
