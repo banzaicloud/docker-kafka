@@ -47,7 +47,7 @@ jobs:
       - name: Build Apache Kafka
         uses: docker/build-push-action@v4
         with:
-          tags: ghcr.io/banzaicloud/kafka:${{ steps.imagetag.outputs.value }}
+          tags: ghcr.io/${{ github.repository_owner }}/kafka:${{ steps.imagetag.outputs.value }}
           file: Dockerfile
           platforms: ${{ env.PLATFORMS }}
           push: true
